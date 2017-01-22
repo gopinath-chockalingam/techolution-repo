@@ -19,6 +19,10 @@ import com.gopi.restaurant.domain.Customer;
 import com.gopi.restaurant.domain.Menu;
 import com.gopi.restaurant.services.RestaurantService;
 
+/**
+ * @author gopic
+ *
+ */
 @Controller
 @RequestMapping(value = "/v1/restaurant")
 public class RestaurantController {

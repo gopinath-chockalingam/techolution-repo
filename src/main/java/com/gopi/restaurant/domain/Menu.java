@@ -3,7 +3,7 @@ package com.gopi.restaurant.domain;
 /**
  * This class will have list of items/dishes
  * 
- * @author gopinath
+ * @author gopic
  *
  */
 public class Menu {

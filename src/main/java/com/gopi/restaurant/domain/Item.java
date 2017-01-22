@@ -1,9 +1,9 @@
 package com.gopi.restaurant.domain;
 
 /**
- * Item is a POJO.
+ * Item has id,name and satisfactorylevel and timeTaken for the item.
  * 
- * @author gopinath
+ * @author gopic
  *
  */
 public class Item {

@@ -16,6 +16,10 @@ import com.gopi.restaurant.domain.Customer;
 import com.gopi.restaurant.domain.Item;
 import com.gopi.restaurant.domain.Menu;
 
+/**
+ * @author gopic
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TecholutionApplication.class})
 public class DomainTest {

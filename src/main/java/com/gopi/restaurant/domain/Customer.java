@@ -6,7 +6,7 @@ package com.gopi.restaurant.domain;
  * until the summation of the time he takes to consume N dishes is less than the
  * given T minutes.
  * 
- * @author gopinath
+ * @author gopic
  *
  */
 public class Customer {

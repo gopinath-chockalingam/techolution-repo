@@ -13,61 +13,47 @@ import com.gopi.restaurant.domain.Customer;
 import com.gopi.restaurant.domain.Item;
 import com.gopi.restaurant.utils.CustomerSatisfactoryLevelComparator;
 
+/**
+ * @author gopic
+ *
+ */
 @Service
 public class RestaurantServiceImpl implements RestaurantService{
 
 	    // Time in minutes
 		private int timeSofarAfterEatingDish = 0;
+		
+		private int totalMaximumSatisfactoryLevel = 0;
 
 		private Boolean hasTimeRemaining = Boolean.FALSE;
 		
 	@Override
 	public String getMaximumSatisfactoryLevel(Customer customer) {
-
+		this.hasTimeRemaining=Boolean.FALSE;
+		this.totalMaximumSatisfactoryLevel=0;
 		return calculateNoOfItemsToEat(customer);
 	}
 	
 	
 	private String calculateNoOfItemsToEat(Customer customer) {
-		       eatItemsFromMenu(customer);
+		   addItemsFromMenu(customer);
 		return displayAllSatisfactoryLevel(customer);
 	}
 
 	private String displayAllSatisfactoryLevel(Customer customer) {
 		Item[] items = customer.getMenu().getItems();
 
-		return getMaximumSatisfactoryLevel(items);
-
-	}
-
-	/**
-	 * Sort the Item array with the help of customized CustomerSatisfactoryLevelComparator class.
-	 * 
-	 * finds the maximum satisfactoryLevel that consumer has for a 
-	 * particular dish/food item.
-	 * 
-	 * @param itemList
-	 */
-	private String getMaximumSatisfactoryLevel(Item[] itemList) {
-		//This comparator is to sort the Items based on satisfactoryLevel in descending order. 
-		//If two items are having equal time to complete the dish, then the item which had max satisfactoryLevel will be return as a response.
-		Arrays.sort(itemList, new CustomerSatisfactoryLevelComparator());
-		System.out.print("[ ");
-		for (int j = 0; j < itemList.length; j++) {
-			System.out.print(itemList[j].getSatisfactoryLevel() + " ");
-		}
-		System.out.print(" ]");
-		System.out.println();
-		return "maximum  satisfaction level is : " + itemList[0].getSatisfactoryLevel() +"\n"
-				+ "item : "+ itemList[0].getName();
+		return eatAndCalculateMaxSatisfactoryLevel(items, customer);
 
 	}
 
 	/**
 	 * This method will read the input file and will read the lines and will add/populate the 
 	 *  properties of Item class to corresponding data members.
+	 *  Also,Sorts the Item array with the help of customized CustomerSatisfactoryLevelComparator class.
+	 *  
 	 */
-	private void eatItemsFromMenu(Customer customer) {
+	private void addItemsFromMenu(Customer customer) {
 		BufferedReader br = null;
 		FileReader reader = null;
 		int itemCount = 0;
@@ -87,32 +73,56 @@ public class RestaurantServiceImpl implements RestaurantService{
 					break;
 				}
 			}
-			// set consumed items
-			customer.getMenu().setItems(Arrays.copyOf(customer.getMenu().getItems(), itemCount - 1));
+			//Sort the added items based on satisfactoryLevel in descending order
+			Arrays.sort(customer.getMenu().getItems(), new CustomerSatisfactoryLevelComparator());
 
 		} catch (IOException e) {
 			System.err.println("IOException while reading input data.. " + e.getStackTrace());
 			hasTimeRemaining =Boolean.FALSE;
 			timeSofarAfterEatingDish=0;
+			totalMaximumSatisfactoryLevel=0;
 		} finally {
 			hasTimeRemaining =Boolean.FALSE;
 			timeSofarAfterEatingDish=0;
+			totalMaximumSatisfactoryLevel=0;
 			try {
 				if (br != null)
 					br.close();
+				if (reader != null)
+					reader.close();
 			} catch (IOException ex) {
 				System.err.println("IOException while shuting down resources.. " + ex.getStackTrace());
 			}
 		}
 	}
 
+	
+	private String eatAndCalculateMaxSatisfactoryLevel(Item[] items,Customer customer){
+		//Iterating the Items which has max satisfactory leve in descending order. 
+		//So that the customer can pick the maximum satisfactory items .
+		for (Item currentDish:items){
+			timeSofarAfterEatingDish = timeSofarAfterEatingDish + currentDish.getTimeTaken();
+			totalMaximumSatisfactoryLevel =totalMaximumSatisfactoryLevel+ currentDish.getSatisfactoryLevel();
+			 // check the total time given is less after eating the current dish
+			if (timeSofarAfterEatingDish > customer.getTotalTimeGiven()) {
+				hasTimeRemaining = Boolean.TRUE;
+				break;
+			}
+			System.out.println(customer.getCustomerName() + " ate/finished  " + currentDish.getName() + " for about "
+					+ currentDish.getTimeTaken() + " mins " + " and got satisfactory level of "
+					+ currentDish.getSatisfactoryLevel());
+		}
+		return "maximum  satisfaction level is : " + totalMaximumSatisfactoryLevel;
+	}
+	
+	
 	/**
-	 * This will tokenize each line and will sum the time taken for each dish
-	 * and compares with the given input time. It will break the loop 
-	 * when the value reaches the given input time.
-	 * 
+	 * This will tokenize each line and will set the timetaken per dish
+	 * and satisfactorylevel of the corresponding dish in Item object 
+	 * 	 * 
 	 * @param line
 	 * @param itemCount
+	 * @param Customer
 	 */
 	private void readAndParseLine(String line, int itemCount,Customer customer) {
 
@@ -128,15 +138,6 @@ public class RestaurantServiceImpl implements RestaurantService{
 			timeTakenPerDish = Integer.parseInt(tokens.nextToken());
 			customer.getMenu().getItems()[itemCount].setTimeTaken(timeTakenPerDish);
 		}
-		timeSofarAfterEatingDish = timeSofarAfterEatingDish + timeTakenPerDish;
-		if (timeSofarAfterEatingDish > customer.getTotalTimeGiven()) {
-			hasTimeRemaining = Boolean.TRUE;
-			return;
-		}
-		System.out.println(customer.getCustomerName() + " ate/finished  " + customer.getMenu().getItems()[itemCount].getName() + " for about "
-				+ customer.getMenu().getItems()[itemCount].getTimeTaken() + " mins " + " and got satisfactory level of "
-				+ customer.getMenu().getItems()[itemCount].getSatisfactoryLevel());
-
 	}
 
 }

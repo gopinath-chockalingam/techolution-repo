@@ -1,6 +1,7 @@
 package com.gopi.restaurant.controller.test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.BufferedReader;
@@ -31,6 +32,10 @@ import com.gopi.restaurant.domain.Customer;
 import com.gopi.restaurant.domain.Menu;
 import com.gopi.restaurant.services.RestaurantService;
 
+/**
+ * @author gopic
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TecholutionApplication.class})
 @SpringBootTest
@@ -103,9 +108,15 @@ public class RestaurantControllerTest {
 	}
 	
 	@Test
-	public void testMaxSatisfactoryLevel() throws Exception{
+	public void testMaxSatisfactoryLevelStatus() throws Exception{
 		this.mockMvc.perform(get("/v1/restaurant/maxlevel"))
         .andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testMaxSatisfactoryLevel() throws Exception{
+		this.mockMvc.perform(get("/v1/restaurant/maxlevel"))
+        .andExpect(content().string("maximum  satisfaction level is : 1899596 "));
 	}
 	
 }

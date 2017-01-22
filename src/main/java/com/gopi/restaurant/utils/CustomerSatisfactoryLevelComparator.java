@@ -7,14 +7,20 @@ import com.gopi.restaurant.domain.Item;
 
 /**
  * Custom comparator to sort based on Satisfactory level in descending order.
- * @author gopinath
+ * @author gopic
  *
  */
 public class CustomerSatisfactoryLevelComparator implements Comparator<Item> {
 
+	 /**
+     * This method compares two items and sorts the item based on 
+     * satisfactoryLevel of Item in descending order
+     * @param customer
+     * @return
+     */
 	@Override
 	public int compare(Item o1, Item o2) {
-		// Sorting in descending order to get the max/highest satisfactory level at first index/position in items array
+		// Sorting in descending order to get the max/highest satisfactory levels on top  items array
 		return o2.getSatisfactoryLevel() - o1.getSatisfactoryLevel();
 	}
 
