@@ -118,7 +118,6 @@ public class RestaurantServiceImpl implements RestaurantService{
 	 */
 	private void readAndParseLine(String line, int itemCount,Customer customer) {
 
-		itemCount = itemCount + 1;
 		int timeTakenPerDish = 0;
 		//It will tokenize/create tokens of the given line by having space as separator
 		StringTokenizer tokens = new StringTokenizer(line, " ");
@@ -132,6 +131,7 @@ public class RestaurantServiceImpl implements RestaurantService{
 			customer.getMenu().getItems()[itemCount].setTimeTaken(timeTakenPerDish);
 			customer.getMenu().getItems()[itemCount].setItemRatio(currentSatisfactoryLevel/timeTakenPerDish);
 		}
+		itemCount = itemCount + 1;
 	}
 
 }

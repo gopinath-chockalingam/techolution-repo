@@ -15,7 +15,7 @@ public class Menu {
 	}
 
 	public Menu(int totalItems){
-		items=new Item[totalItems+1];
+		items=new Item[totalItems];
 		populateItems();
 	}
 	

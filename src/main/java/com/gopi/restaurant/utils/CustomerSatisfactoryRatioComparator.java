@@ -22,7 +22,7 @@ public class CustomerSatisfactoryRatioComparator implements Comparator<Item> {
 	public int compare(Item o1, Item o2) {
 		
 		// Sorting satisfactoryRatio in descending order to get the max/highest satisfactory ratio for fractional knapsack
-		return (int) ((int) o2.getItemRatio() - o1.getItemRatio());
+		return (int) (o2.getItemRatio() - o1.getItemRatio());
 	}
 
 }
