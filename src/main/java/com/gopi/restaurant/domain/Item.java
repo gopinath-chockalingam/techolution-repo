@@ -15,6 +15,16 @@ public class Item {
 	private int satisfactoryLevel;
 
 	private int timeTaken;
+	
+	private double itemRatio;
+
+	public double getItemRatio() {
+		return itemRatio;
+	}
+
+	public void setItemRatio(double itemRatio) {
+		this.itemRatio = itemRatio;
+	}
 
 	public Item(int id, String name) {
 		this.name = name;

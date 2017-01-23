@@ -116,7 +116,7 @@ public class RestaurantControllerTest {
 	@Test
 	public void testMaxSatisfactoryLevel() throws Exception{
 		this.mockMvc.perform(get("/v1/restaurant/maxlevel"))
-        .andExpect(content().string("maximum  satisfaction level is : 1899596 "));
+        .andExpect(content().string("maximum  satisfaction level is : 2464718 "));
 	}
 	
 }

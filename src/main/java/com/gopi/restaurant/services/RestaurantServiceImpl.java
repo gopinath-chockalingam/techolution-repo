@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.gopi.restaurant.domain.Customer;
 import com.gopi.restaurant.domain.Item;
-import com.gopi.restaurant.utils.CustomerSatisfactoryLevelComparator;
+import com.gopi.restaurant.utils.CustomerSatisfactoryRatioComparator;
 
 /**
  * @author gopic
@@ -21,15 +21,12 @@ import com.gopi.restaurant.utils.CustomerSatisfactoryLevelComparator;
 public class RestaurantServiceImpl implements RestaurantService{
 
 	    // Time in minutes
-		private int timeSofarAfterEatingDish = 0;
+		private int timeSofarBeforeEatingDish = 0;
 		
 		private int totalMaximumSatisfactoryLevel = 0;
 
-		private Boolean hasTimeRemaining = Boolean.FALSE;
-		
 	@Override
 	public String getMaximumSatisfactoryLevel(Customer customer) {
-		this.hasTimeRemaining=Boolean.FALSE;
 		this.totalMaximumSatisfactoryLevel=0;
 		return calculateNoOfItemsToEat(customer);
 	}
@@ -65,25 +62,18 @@ public class RestaurantServiceImpl implements RestaurantService{
 			br.readLine(); // this will read the first line
 			String line;
 			while ((line = br.readLine()) != null) {
-				if (!hasTimeRemaining) {
 					readAndParseLine(line, itemCount,customer);
 					itemCount++;
-
-				} else {
-					break;
-				}
 			}
-			//Sort the added items based on satisfactoryLevel in descending order
-			Arrays.sort(customer.getMenu().getItems(), new CustomerSatisfactoryLevelComparator());
+			//Sort the added items based on satisfactoryRatio in descending order
+			Arrays.sort(customer.getMenu().getItems(), new CustomerSatisfactoryRatioComparator());
 
 		} catch (IOException e) {
 			System.err.println("IOException while reading input data.. " + e.getStackTrace());
-			hasTimeRemaining =Boolean.FALSE;
-			timeSofarAfterEatingDish=0;
+			timeSofarBeforeEatingDish=0;
 			totalMaximumSatisfactoryLevel=0;
 		} finally {
-			hasTimeRemaining =Boolean.FALSE;
-			timeSofarAfterEatingDish=0;
+			timeSofarBeforeEatingDish=0;
 			totalMaximumSatisfactoryLevel=0;
 			try {
 				if (br != null)
@@ -101,16 +91,17 @@ public class RestaurantServiceImpl implements RestaurantService{
 		//Iterating the Items which has max satisfactory leve in descending order. 
 		//So that the customer can pick the maximum satisfactory items .
 		for (Item currentDish:items){
-			timeSofarAfterEatingDish = timeSofarAfterEatingDish + currentDish.getTimeTaken();
-			totalMaximumSatisfactoryLevel =totalMaximumSatisfactoryLevel+ currentDish.getSatisfactoryLevel();
-			 // check the total time given is less after eating the current dish
-			if (timeSofarAfterEatingDish > customer.getTotalTimeGiven()) {
-				hasTimeRemaining = Boolean.TRUE;
-				break;
-			}
+			timeSofarBeforeEatingDish = timeSofarBeforeEatingDish + currentDish.getTimeTaken();
 			System.out.println(customer.getCustomerName() + " ate/finished  " + currentDish.getName() + " for about "
 					+ currentDish.getTimeTaken() + " mins " + " and got satisfactory level of "
-					+ currentDish.getSatisfactoryLevel());
+					+ currentDish.getSatisfactoryLevel()+ " having ratio as "+currentDish.getItemRatio());
+			 // check the total time given is less after eating the current dish
+			if (timeSofarBeforeEatingDish >= customer.getTotalTimeGiven()) {
+				int remainingTime = timeSofarBeforeEatingDish - customer.getTotalTimeGiven();
+				totalMaximumSatisfactoryLevel += currentDish.getSatisfactoryLevel() * ((double) remainingTime / currentDish.getTimeTaken());
+				break;
+			}
+			totalMaximumSatisfactoryLevel =totalMaximumSatisfactoryLevel+ currentDish.getSatisfactoryLevel();
 		}
 		return "maximum  satisfaction level is : " + totalMaximumSatisfactoryLevel;
 	}
@@ -123,6 +114,7 @@ public class RestaurantServiceImpl implements RestaurantService{
 	 * @param line
 	 * @param itemCount
 	 * @param Customer
+	 * return
 	 */
 	private void readAndParseLine(String line, int itemCount,Customer customer) {
 
@@ -132,11 +124,13 @@ public class RestaurantServiceImpl implements RestaurantService{
 		StringTokenizer tokens = new StringTokenizer(line, " ");
 
 		//when we call tokens.nextToken() , it will give the amount of satisfaction from eating dish from data.txt file
-		customer.getMenu().getItems()[itemCount].setSatisfactoryLevel(Integer.parseInt(tokens.nextToken()));
+		int currentSatisfactoryLevel=Integer.parseInt(tokens.nextToken());
+		customer.getMenu().getItems()[itemCount].setSatisfactoryLevel(currentSatisfactoryLevel);
 		if (tokens.hasMoreElements()) {
 			//when we call tokens.nextToken() here , it will give the time taken for dish from data.txt file
 			timeTakenPerDish = Integer.parseInt(tokens.nextToken());
 			customer.getMenu().getItems()[itemCount].setTimeTaken(timeTakenPerDish);
+			customer.getMenu().getItems()[itemCount].setItemRatio(currentSatisfactoryLevel/timeTakenPerDish);
 		}
 	}
 

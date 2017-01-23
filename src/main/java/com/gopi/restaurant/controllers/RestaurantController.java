@@ -96,9 +96,6 @@ public class RestaurantController {
 		} catch (IOException ex) {
 			System.err.println("IOException while shuting down resources.. " + ex.getStackTrace());
 		}
-    	
-
-
        return new ResponseEntity<String>(finalResponse+" ",HttpStatus.OK);
     }
 
@@ -108,9 +105,8 @@ public class RestaurantController {
     				bufferedReader = new BufferedReader(fileReader);
     				return bufferedReader;
     }
-    
-    
-   private void readFileAndSetTotalItemsAndTime(String filePath) throws IOException{
+
+    private void readFileAndSetTotalItemsAndTime(String filePath) throws IOException{
 	   String firstLine=null;
 	    bufferedReader =getBufferedReader(filePath);
 		  if(bufferedReader!=null){
@@ -124,6 +120,5 @@ public class RestaurantController {
 				this.totalTimeGiven = Integer.parseInt(firstLineTokens[0]);
 				this.totalItems=Integer.parseInt(firstLineTokens[1]);
 			}
-			
    }
 }
